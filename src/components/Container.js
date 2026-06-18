@@ -13,7 +13,7 @@ const Container = ({ listMovies, loading }) => {
         <Box data={listMovies} loading={loading} setMovie={setMovieSelected} />
         <Box data={watched} type={'watched'} selectedMovie={movieSelected}>
             {movieSelected ? 
-              <MovieDetail movieSelected={movieSelected} setMovie={setMovieSelected} /> : 
+              <MovieDetail movieSelected={movieSelected} setMovie={setMovieSelected} setWatched={setWatched} /> : 
               <WatchSummary watched={watched} />
             }
         </Box>

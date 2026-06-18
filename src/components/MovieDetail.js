@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
-const MovieDetail = ({ movieSelected, setMovie }) => {
+const MovieDetail = ({ movieSelected, setMovie, setWatched }) => {
     const [movieDetails, setMovieDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [idError, setIdError] = useState(null);
+    const [watchedInList, setWatchedInList] = useState(false);
 
 
     const getMovieDetails = async (id) => {
@@ -26,6 +27,32 @@ const MovieDetail = ({ movieSelected, setMovie }) => {
         setMovieDetails(null);
         setIdError(null);
     }
+
+    const handleAddToWatched = () => {
+        const newWatchedMovie = {
+            imdbID: movieDetails.imdbID,
+            Title: movieDetails.Title,
+            Year: movieDetails.Year,
+            Poster: movieDetails.Poster,
+            runtime: movieDetails.Runtime.split(' ')[0],
+            imdbRating: movieDetails.imdbRating,
+            userRating: 0,
+        };
+
+        setWatched(prev => {
+            if(prev.some(movie => movie.imdbID === newWatchedMovie.imdbID)) {
+                setWatchedInList(true);
+                return prev;
+            } else {
+                setWatchedInList(false);
+                return [...prev, newWatchedMovie];
+            }
+        });
+        setTimeout(() => {
+            closeDetails();
+            setWatchedInList(false);
+        }, 2000);
+    };
 
     useEffect(() => {
         if(movieSelected) {
@@ -59,6 +86,8 @@ const MovieDetail = ({ movieSelected, setMovie }) => {
                     <section>
                         <div className="rating">
                             <StarRating maxRating={10} />
+                            <button className="btn-add" onClick={handleAddToWatched }>Add to list</button>
+                            {watchedInList && <span>This movie is already in your watched list.</span>}
                         </div>
                         <p><em>{movieDetails?.Plot}</em></p>
                         <p>Starring: {movieDetails?.Actors}</p>

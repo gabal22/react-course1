@@ -59,6 +59,15 @@ const MovieDetail = ({ movieSelected, setMovie, setWatched, watchedList }) => {
         }
     }, [movieSelected])
 
+    useEffect(() => {
+        if(movieDetails) {
+            document.title = `Movie | ${movieDetails.Title}`;
+        }
+        return () => {
+            document.title = 'UsePopcorn App';
+        }
+    }, [movieDetails])
+
   return (
     loading ? 
         <p className='error'>Loading...</p> : 

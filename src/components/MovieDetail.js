@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
-const MovieDetail = ({ movieSelected, setMovie, setWatched }) => {
+const MovieDetail = ({ movieSelected, setMovie, setWatched, watchedList }) => {
     const [movieDetails, setMovieDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const [idError, setIdError] = useState(null);
-    const [watchedInList, setWatchedInList] = useState(false);
-
+    const [userRating, setUserRating] = useState(0);
+    const watchedRating = watchedList.find(movie => movie.imdbID === movieSelected)?.userRating;
 
     const getMovieDetails = async (id) => {
         try {
@@ -36,22 +36,17 @@ const MovieDetail = ({ movieSelected, setMovie, setWatched }) => {
             Poster: movieDetails.Poster,
             runtime: movieDetails.Runtime.split(' ')[0],
             imdbRating: movieDetails.imdbRating,
-            userRating: 0,
+            userRating: userRating,
         };
 
         setWatched(prev => {
             if(prev.some(movie => movie.imdbID === newWatchedMovie.imdbID)) {
-                setWatchedInList(true);
                 return prev;
             } else {
-                setWatchedInList(false);
                 return [...prev, newWatchedMovie];
             }
         });
-        setTimeout(() => {
-            closeDetails();
-            setWatchedInList(false);
-        }, 2000);
+        closeDetails();
     };
 
     useEffect(() => {
@@ -85,9 +80,13 @@ const MovieDetail = ({ movieSelected, setMovie, setWatched }) => {
                     </header>
                     <section>
                         <div className="rating">
-                            <StarRating maxRating={10} />
-                            <button className="btn-add" onClick={handleAddToWatched }>Add to list</button>
-                            {watchedInList && <span>This movie is already in your watched list.</span>}
+                            {!watchedRating ? 
+                                <>
+                                    <StarRating maxRating={10} onSetRating={setUserRating} />
+                                    {userRating > 0 && <button className="btn-add" onClick={handleAddToWatched }>Add to List</button>}
+                                </> :
+                                <span>This movie is already in your watched list. <br />You rated this movie {watchedRating} ⭐</span>
+                            }
                         </div>
                         <p><em>{movieDetails?.Plot}</em></p>
                         <p>Starring: {movieDetails?.Actors}</p>
